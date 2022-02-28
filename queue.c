@@ -154,7 +154,15 @@ void q_release_element(element_t *e)
  */
 int q_size(struct list_head *head)
 {
-    return -1;
+    if (!head || list_empty(head))
+        return 0;
+
+    int len = 0;
+    struct list_head *p;
+
+    list_for_each (p, head)
+        len++;
+    return len;
 }
 
 /*
@@ -168,6 +176,19 @@ int q_size(struct list_head *head)
 bool q_delete_mid(struct list_head *head)
 {
     // https://leetcode.com/problems/delete-the-middle-node-of-a-linked-list/
+    if (!head || list_empty(head))
+        return false;
+    struct list_head *mid = head->next, *p;
+    int i = 0;
+    list_for_each (p, head) {
+        if (i % 2) {
+            mid = mid->next;
+        }
+        i++;
+    }
+
+    list_del(mid);
+    q_release_element(list_entry(mid, element_t, list));
     return true;
 }
 
