@@ -92,11 +92,11 @@ bool q_insert_tail(struct list_head *head, char *s)
     return true;
 }
 
-static inline void cpynstr(char *des, const char *source, size_t bufszie)
+static inline void cpynstr(char *des, const char *source, size_t bufsize)
 {
     if (des) {
-        strncpy(des, source, bufszie - 1);
-        des[bufszie - 1] = 0;
+        strncpy(des, source, bufsize - 1);
+        des[bufsize - 1] = 0;
     }
 }
 
