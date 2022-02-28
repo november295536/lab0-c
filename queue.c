@@ -222,11 +222,40 @@ bool q_delete_dup(struct list_head *head)
 }
 
 /*
+ * Swap two list_head.
+ */
+static inline void list_swap(struct list_head *head1, struct list_head *head2)
+{
+    if (head1->next == head2) {
+        list_del(head2);
+        list_add(head2, head1->prev);
+    } else if (head2->next == head1) {
+        list_del(head1);
+        list_add(head1, head2->prev);
+    } else {
+        struct list_head *head1_prev = head1->prev, *head2_prev = head2->prev;
+        list_del(head1);
+        list_del(head2);
+        list_add(head2, head1_prev);
+        list_add(head1, head2_prev);
+    }
+}
+
+/*
  * Attempt to swap every two adjacent nodes.
  */
 void q_swap(struct list_head *head)
 {
     // https://leetcode.com/problems/swap-nodes-in-pairs/
+    int i = 0;
+    struct list_head *cur;
+    list_for_each (cur, head) {
+        if (i % 2) {
+            list_swap(cur->prev, cur);
+            cur = cur->next;
+        }
+        i++;
+    }
 }
 
 /*
