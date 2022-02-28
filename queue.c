@@ -94,7 +94,7 @@ bool q_insert_tail(struct list_head *head, char *s)
 
 static inline void cpynstr(char *des, const char *source, size_t bufszie)
 {
-    if (source) {
+    if (des) {
         strncpy(des, source, bufszie - 1);
         des[bufszie - 1] = 0;
     }
@@ -207,15 +207,27 @@ bool q_delete_dup(struct list_head *head)
     if (!head)
         return false;
 
-    element_t *pos, *next;
+    element_t *pos, *tmp;
     list_for_each_entry (pos, head, list) {
         if (pos->list.next == head)
             break;
-        for (next = list_entry(pos->list.next, element_t, list);
-             strcmp(pos->value, next->value) == 0;
-             next = list_entry(pos->list.next, element_t, list)) {
-            list_del(&next->list);
-            q_release_element(next);
+        bool delete_cur = false;
+        for (tmp = list_entry(pos->list.next, element_t, list);
+             strcmp(pos->value, tmp->value) == 0;
+             tmp = list_entry(pos->list.next, element_t, list)) {
+            list_del(&tmp->list);
+            q_release_element(tmp);
+            delete_cur = true;
+            // cppcheck-suppress knownConditionTrueFalse
+            if (pos->list.next == head)
+                break;
+        }
+
+        if (delete_cur) {
+            tmp = list_entry(pos->list.prev, element_t, list);
+            list_del(&pos->list);
+            q_release_element(pos);
+            pos = tmp;
         }
     }
     return true;
