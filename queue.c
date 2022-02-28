@@ -92,6 +92,14 @@ bool q_insert_tail(struct list_head *head, char *s)
     return true;
 }
 
+static inline void cpynstr(char *des, const char *source, size_t bufszie)
+{
+    if (source) {
+        strncpy(des, source, bufszie - 1);
+        des[bufszie - 1] = 0;
+    }
+}
+
 /*
  * Attempt to remove element from head of queue.
  * Return target element.
@@ -108,7 +116,12 @@ bool q_insert_tail(struct list_head *head, char *s)
  */
 element_t *q_remove_head(struct list_head *head, char *sp, size_t bufsize)
 {
-    return NULL;
+    if (!head || list_empty(head))
+        return NULL;
+    element_t *node = list_first_entry(head, element_t, list);
+    list_del(&node->list);
+    cpynstr(sp, node->value, bufsize);
+    return node;
 }
 
 /*
