@@ -71,7 +71,6 @@ bool q_insert_head(struct list_head *head, char *s)
     if (!node)
         return false;
     list_add(&node->list, head);
-
     return true;
 }
 
@@ -84,6 +83,12 @@ bool q_insert_head(struct list_head *head, char *s)
  */
 bool q_insert_tail(struct list_head *head, char *s)
 {
+    if (!head)
+        return false;
+    element_t *node = element_create(s);
+    if (!node)
+        return false;
+    list_add_tail(&node->list, head);
     return true;
 }
 
