@@ -28,9 +28,11 @@ void q_free(struct list_head *l)
 {
     if (!l)
         return;
-    element_t *pos;
-    list_for_each_entry (pos, l, list)
-        q_release_element(pos);
+    while (!list_empty(l)) {
+        element_t *node = list_first_entry(l, element_t, list);
+        list_del(&node->list);
+        q_release_element(node);
+    }
 
     free(l);
 }
