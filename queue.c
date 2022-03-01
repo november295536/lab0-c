@@ -301,4 +301,26 @@ void q_reverse(struct list_head *head)
  * No effect if q is NULL or empty. In addition, if q has only one
  * element, do nothing.
  */
-void q_sort(struct list_head *head) {}
+void q_sort(struct list_head *head)
+{
+    if (!head || list_empty(head) || list_is_singular(head))
+        return;
+    struct list_head *pivot = head->next;
+    element_t *pivot_entry = list_entry(pivot, element_t, list);
+    LIST_HEAD(head1);
+    LIST_HEAD(head2);
+
+    while (pivot->next != head) {
+        struct list_head *cur = pivot->next, *target;
+        element_t *cur_entry = list_entry(cur, element_t, list);
+        target =
+            strcmp(pivot_entry->value, cur_entry->value) > 0 ? &head1 : &head2;
+        list_move(cur, target);
+    }
+
+    q_sort(&head1);
+    q_sort(&head2);
+
+    list_splice(&head1, head);
+    list_splice_tail(&head2, head);
+}
