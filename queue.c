@@ -324,3 +324,31 @@ void q_sort(struct list_head *head)
     list_splice(&head1, head);
     list_splice_tail(&head2, head);
 }
+/*
+ * merge_two_lists() - Merge two sorted linked list
+ * @haed1: pointer to the head of the list 1
+ * @head2: pointer to the head of the list 2
+ * @head_to: pointer to the head of the list which recieves nodes
+ *
+ * All nodes from the @head1 and @head2 will move to @head_to
+ */
+// cppcheck-suppress unusedFunction
+static inline void merge_two_lists(struct list_head *head1,
+                                   struct list_head *head2,
+                                   struct list_head *head_to)
+{
+    struct list_head *node;
+    element_t *e1, *e2;
+    for (; !list_empty(head1) && !list_empty(head2);) {
+        e1 = list_entry(head1->next, element_t, list);
+        e2 = list_entry(head2->next, element_t, list);
+
+        node = (strcmp(e1->value, e2->value) < 0) ? &e1->list : &e2->list;
+        list_del(node);
+        list_add_tail(node, head_to);
+    }
+
+    node = list_empty(head1) ? head2->next : head1->next;
+    list_del(node);
+    list_add_tail(node, head_to);
+}
