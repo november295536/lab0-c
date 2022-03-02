@@ -349,6 +349,7 @@ void q_sort(struct list_head *head)
     struct list_head *cur = head;
     while (cur->next) {
         cur->next->prev = cur;
+        cur = cur->next;
     }
     cur->next = head;
     head->prev = cur;
