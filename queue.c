@@ -46,10 +46,11 @@ void q_free(struct list_head *l)
 static inline element_t *element_create(char *s)
 {
     element_t *node = malloc(sizeof(element_t));
+    if (!node)
+        return NULL;
     char *copy = strdup(s);
-    if (!node || !copy) {
+    if (!copy) {
         free(node);
-        free(copy);
         return NULL;
     }
     node->value = copy;
