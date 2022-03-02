@@ -165,6 +165,20 @@ int q_size(struct list_head *head)
     return len;
 }
 
+static inline struct list_head *find_mid(struct list_head *head)
+{
+    struct list_head *mid = head, *p;
+    int i = 1;
+
+    for (p = head->next; p && p != head; p = p->next) {
+        if (i % 2) {
+            mid = mid->next;
+        }
+        i++;
+    }
+    return mid;
+}
+
 /*
  * Delete the middle node in list.
  * The middle node of a linked list of size n is the
@@ -178,14 +192,7 @@ bool q_delete_mid(struct list_head *head)
     // https://leetcode.com/problems/delete-the-middle-node-of-a-linked-list/
     if (!head || list_empty(head))
         return false;
-    struct list_head *mid = head, *p;
-    int i = 1;
-    list_for_each (p, head) {
-        if (i % 2) {
-            mid = mid->next;
-        }
-        i++;
-    }
+    struct list_head *mid = find_mid(head);
 
     list_del(mid);
     q_release_element(list_entry(mid, element_t, list));
@@ -296,6 +303,35 @@ void q_reverse(struct list_head *head)
     }
 }
 
+static struct list_head *merge_two_lists(struct list_head *head1,
+                                         struct list_head *head2)
+{
+    struct list_head *head = NULL, **node, **ptr = &head;
+    for (node = NULL; head1 && head2; *node = (*node)->next) {
+        element_t *e1 = list_entry(head1, element_t, list);
+        element_t *e2 = list_entry(head2, element_t, list);
+        node = (strcmp(e1->value, e2->value) < 0) ? &head1 : &head2;
+        *ptr = *node;
+        ptr = &(*ptr)->next;
+    }
+    *ptr = (struct list_head *) ((u_int64_t) head1 | (u_int64_t) head2);
+
+    return head;
+}
+
+static struct list_head *merge_sort(struct list_head *head)
+{
+    if (!head->next)
+        return head;
+    struct list_head *mid = find_mid(head);
+    mid->prev->next = NULL;
+
+    head = merge_sort(head);
+    mid = merge_sort(mid);
+
+    return merge_two_lists(head, mid);
+}
+
 /*
  * Sort elements of queue in ascending order
  * No effect if q is NULL or empty. In addition, if q has only one
@@ -305,50 +341,15 @@ void q_sort(struct list_head *head)
 {
     if (!head || list_empty(head) || list_is_singular(head))
         return;
-    struct list_head *pivot = head->next;
-    element_t *pivot_entry = list_entry(pivot, element_t, list);
-    LIST_HEAD(head1);
-    LIST_HEAD(head2);
+    struct list_head *first_node = head->next;
+    head->prev->next = NULL;
+    struct list_head *sorted_list = merge_sort(first_node);
 
-    while (pivot->next != head) {
-        struct list_head *cur = pivot->next, *target;
-        element_t *cur_entry = list_entry(cur, element_t, list);
-        target =
-            strcmp(pivot_entry->value, cur_entry->value) > 0 ? &head1 : &head2;
-        list_move(cur, target);
+    head->next = sorted_list;
+    struct list_head *cur = head;
+    while (cur->next) {
+        cur->next->prev = cur;
     }
-
-    q_sort(&head1);
-    q_sort(&head2);
-
-    list_splice(&head1, head);
-    list_splice_tail(&head2, head);
-}
-/*
- * merge_two_lists() - Merge two sorted linked list
- * @haed1: pointer to the head of the list 1
- * @head2: pointer to the head of the list 2
- * @head_to: pointer to the head of the list which recieves nodes
- *
- * All nodes from the @head1 and @head2 will move to @head_to
- */
-// cppcheck-suppress unusedFunction
-static inline void merge_two_lists(struct list_head *head1,
-                                   struct list_head *head2,
-                                   struct list_head *head_to)
-{
-    struct list_head *node;
-    element_t *e1, *e2;
-    for (; !list_empty(head1) && !list_empty(head2);) {
-        e1 = list_entry(head1->next, element_t, list);
-        e2 = list_entry(head2->next, element_t, list);
-
-        node = (strcmp(e1->value, e2->value) < 0) ? &e1->list : &e2->list;
-        list_del(node);
-        list_add_tail(node, head_to);
-    }
-
-    node = list_empty(head1) ? head2->next : head1->next;
-    list_del(node);
-    list_add_tail(node, head_to);
+    cur->next = head;
+    head->prev = cur;
 }
