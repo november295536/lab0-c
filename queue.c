@@ -11,8 +11,7 @@
  *   cppcheck-suppress nullPointer
  */
 
-/*
- * Create empty queue.
+/* Create empty queue.
  * Return NULL if could not allocate space.
  */
 struct list_head *q_new()
@@ -57,8 +56,7 @@ static inline element_t *element_create(char *s)
     return node;
 }
 
-/*
- * Attempt to insert element at head of queue.
+/* Attempt to insert element at head of queue.
  * Return true if successful.
  * Return false if q is NULL or could not allocate space.
  * Argument s points to the string to be stored.
@@ -75,8 +73,7 @@ bool q_insert_head(struct list_head *head, char *s)
     return true;
 }
 
-/*
- * Attempt to insert element at tail of queue.
+/* Attempt to insert element at tail of queue.
  * Return true if successful.
  * Return false if q is NULL or could not allocate space.
  * Argument s points to the string to be stored.
@@ -112,7 +109,7 @@ static inline void cpynstr(char *des, const char *source, size_t bufsize)
  * The space used by the list element and the string should not be freed.
  * The only thing "remove" need to do is unlink it.
  *
- * REF:
+ * Reference:
  * https://english.stackexchange.com/questions/52508/difference-between-delete-and-remove
  */
 element_t *q_remove_head(struct list_head *head, char *sp, size_t bufsize)
@@ -125,8 +122,7 @@ element_t *q_remove_head(struct list_head *head, char *sp, size_t bufsize)
     return node;
 }
 
-/*
- * Attempt to remove element from tail of queue.
+/* Attempt to remove element from tail of queue.
  * Other attribute is as same as q_remove_head.
  */
 element_t *q_remove_tail(struct list_head *head, char *sp, size_t bufsize)
@@ -139,8 +135,7 @@ element_t *q_remove_tail(struct list_head *head, char *sp, size_t bufsize)
     return node;
 }
 
-/*
- * WARN: This is for external usage, don't modify it
+/* WARN: This is for external usage, don't modify it
  * Attempt to release element.
  */
 void q_release_element(element_t *e)
@@ -149,8 +144,7 @@ void q_release_element(element_t *e)
     free(e);
 }
 
-/*
- * Return number of elements in queue.
+/* Return number of elements in queue.
  * Return 0 if q is NULL or empty
  */
 int q_size(struct list_head *head)
@@ -180,8 +174,7 @@ static inline struct list_head *find_mid(struct list_head *head)
     return mid;
 }
 
-/*
- * Delete the middle node in list.
+/* Delete the middle node in list.
  * The middle node of a linked list of size n is the
  * ⌊n / 2⌋th node from the start using 0-based indexing.
  * If there're six element, the third member should be return.
@@ -200,8 +193,7 @@ bool q_delete_mid(struct list_head *head)
     return true;
 }
 
-/*
- * Delete all nodes that have duplicate string,
+/* Delete all nodes that have duplicate string,
  * leaving only distinct strings from the original list.
  * Return true if successful.
  * Return false if list is NULL.
@@ -278,8 +270,7 @@ void q_swap(struct list_head *head)
     }
 }
 
-/*
- * Reverse elements in queue
+/* Reverse elements in queue
  * No effect if q is NULL or empty
  * This function should not allocate or free any list elements
  * (e.g., by calling q_insert_head, q_insert_tail, or q_remove_head).
@@ -328,8 +319,7 @@ static struct list_head *merge_sort(struct list_head *head)
     return merge_two_lists(head, mid);
 }
 
-/*
- * Sort elements of queue in ascending order
+/* Sort elements of queue in ascending order
  * No effect if q is NULL or empty. In addition, if q has only one
  * element, do nothing.
  */
