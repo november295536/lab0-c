@@ -289,19 +289,14 @@ void q_reverse(struct list_head *head)
 {
     if (!head || list_empty(head))
         return;
-    struct list_head *front = head, *back = head, *tmp;
-    while (true) {
-        front = front->next;
-        back = back->prev;
-        if (front == back)
-            break;
-        list_swap(front, back);
-        tmp = front;
-        front = back;
-        back = tmp;
-        if (front->next == back)
-            break;
-    }
+    struct list_head *cur = head;
+    do {
+        struct list_head *tmp = cur->next;
+        cur->next = cur->prev;
+        cur->prev = tmp;
+
+        cur = cur->prev;
+    } while (cur != head);
 }
 
 static struct list_head *merge_two_lists(struct list_head *head1,
